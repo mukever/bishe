@@ -1,0 +1,1 @@
+default_app_config = "spider_monitor.apps.SpiderMonitorConfig"
