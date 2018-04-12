@@ -130,7 +130,7 @@ USE_TZ = False  # 数据库取本地时间
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
-DEBUG= False
+
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
@@ -140,7 +140,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # 把这些文件放到一起是为了用 apache/nginx 等部署的时候更方便
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'media'),
 ]
 # UserProfile 覆盖了 django 内置的 user 表
@@ -153,3 +152,15 @@ EMAIL_HOST_USER = 'mukever@163.com'
 EMAIL_HOST_PASSWORD = 'abcd123456'
 EMAIL_USE_TLS = True
 EMAIL_FROM = 'mukever@163.com'
+
+
+#####cap img
+
+MEDIA_CAP_ROOT = os.path.join(BASE_DIR, 'media/caps/sites/')
+MEDIA_CAP_DB_PATH = 'media/caps/sites/'
+
+
+
+######log
+
+DEBUG= True

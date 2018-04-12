@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls import url, include
 from django.views.static import serve #处理静态文件
-
+from bishe.settings import MEDIA_ROOT
 
 import xadmin
 
@@ -27,15 +27,22 @@ urlpatterns = [
 
     url('admin/', xadmin.site.urls),
 
+    #配置上传文件的访问处理函数
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
 ]
+from bishe.settings import STATIC_ROOT, MEDIA_ROOT
+# 配置静态文件访问处理
+urlpatterns.append(url(r'^static/(?P<path>.*)$', serve, {'document_root': STATIC_ROOT}))
+urlpatterns.append(url(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}))
 
-
-if settings.DEBUG:
-    # debug_toolbar 插件配置
-    import debug_toolbar
-    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
-else:
-    # 项目部署上线时使用
-    from bishe.settings import STATIC_ROOT
-    # 配置静态文件访问处理
-    urlpatterns.append(url(r'^static/(?P<path>.*)$', serve, {'document_root': STATIC_ROOT}))
+# if settings.DEBUG:
+#     # debug_toolbar 插件配置
+#     import debug_toolbar
+#     urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
+# else:
+#     # 项目部署上线时使用
+#     from bishe.settings import STATIC_ROOT, MEDIA_ROOT
+#
+#     # 配置静态文件访问处理
+#     urlpatterns.append(url(r'^static/(?P<path>.*)$', serve, {'document_root': STATIC_ROOT}))
+#     urlpatterns.append(url(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}))

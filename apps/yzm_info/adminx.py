@@ -3,13 +3,14 @@ import xadmin
 # from TextInputCounter import TextInputCounter
 from yzm_info.xadmin_action import MyAction
 
-from .models import YzmInfo,YzmModel
-
+from .models import YzmInfo, YzmModel, TrainData
 
 
 class YzmInfoAdmin:
 
-    list_display = ['name','image_url', 'category', 'tag',
+    say_hello = True
+
+    list_display = ['name','image_url','img', 'category', 'tag',
                     'desc', 'add_time']
     search_fields = ['name','image_url', 'category', 'tag',
                     'desc']
@@ -17,26 +18,23 @@ class YzmInfoAdmin:
                     'desc']
 
     ordering = ['-add_time']
-    # data_charts = {
-    #
-    #     # "user_count": {'title': u"User Register Raise", "x-field": "add_time", "y-field": ("category",),
-    #     #                "order": ('year',)},
-    #     # "avg_count": {'title': u"Avg Report", "x-field": "date", "y-field": ('avg_count',), "order": ('date',)}
-    # }
-
     # readonly_fields 和 exclude 的字段不要重复，否则会冲突
     #readonly_fields = ['image_url', 'category', 'tag','desc']
-
     #重新在这里写一遍的原因是，避免数据重复
     def queryset(self):
         qs = super(YzmInfoAdmin, self).queryset()
         return qs
 
+    # def save_models(self):
+    #     self.new_obj.yzminfo = self.request.yzminfo
+    #     super().save_models()
+
     actions = [MyAction]
-    model_icon = 'fa fa-user-plus'
+    refresh_times = (3, 5)
+    model_icon = 'fa fa-handshake-o'
 
 class YzmModelAdmin:
-
+    say_hello = True
     list_display = ['name','yzmname',
                     'desc', 'add_time']
     search_fields = ['name','yzmname',
@@ -45,7 +43,6 @@ class YzmModelAdmin:
                     'desc', 'add_time']
 
     ordering = ['-add_time']
-    refresh_times = [5, 2]
 
     # readonly_fields 和 exclude 的字段不要重复，否则会冲突
     #readonly_fields = ['image_url', 'category', 'tag','desc']
@@ -55,12 +52,32 @@ class YzmModelAdmin:
         qs = super(YzmModelAdmin, self).queryset()
         return qs
 
-    model_icon = 'fa fa-user-plus'
+    model_icon = 'fa fa-file-o'
 
 
+class TrainDataAdmin:
+    say_hello = True
+    list_display = ['name','yzmname','path','nums','ratio',
+                    'desc', 'add_time']
+    search_fields =  ['name','yzmname','path','nums','ratio',
+                    'desc', 'add_time']
+    list_filter = ['name','yzmname','path','nums','ratio',
+                    'desc', 'add_time']
+
+    ordering = ['-add_time']
 
 
-# xadmin.site.register(PostAdminForm,PostAdmin)
+    # readonly_fields 和 exclude 的字段不要重复，否则会冲突
+    #readonly_fields = ['image_url', 'category', 'tag','desc']
+
+    #重新在这里写一遍的原因是，避免数据重复
+    def queryset(self):
+        qs = super(TrainDataAdmin, self).queryset()
+        return qs
+
+    model_icon = 'fa fa-file-o'
+
+
 xadmin.site.register(YzmInfo, YzmInfoAdmin)
 xadmin.site.register(YzmModel, YzmModelAdmin)
-
+xadmin.site.register(TrainData,TrainDataAdmin)

@@ -1,6 +1,6 @@
 
 import xadmin
-from spider_monitor.models import SpiderInfo, MonitorInfo
+from spider_monitor.models import SpiderInfo, PredisctList, SpiderStatus
 
 
 class SpiderInfoAdmin:
@@ -25,25 +25,38 @@ class SpiderInfoAdmin:
         qs = super(SpiderInfoAdmin, self).queryset()
         return qs
 
-    model_icon = 'fa fa-user-plus'
+    model_icon = 'fa fa-file-o'
 
-class MonitorInfoAdmin:
+class PredisctListAdmin:
 
-    # list_display = ['name','url', 'status', 'img',
-    #                 'predict', 'desc', 'add_time']
-    # search_fields = ['name','url', 'status', 'img',
-    #                 'predict', 'desc', 'add_time']
-    # list_filter = ['name','url', 'status', 'img',
-    #                 'predict', 'desc', 'add_time']
+    list_display = ['spidername', 'status', 'img',
+                    'predict', 'desc', 'add_time']
+    search_fields = ['spidername', 'status', 'img',
+                    'predict', 'desc', 'add_time']
+    list_filter = ['spidername', 'status', 'img',
+                    'predict', 'desc', 'add_time']
     #
-    # ordering = ['-add_time']
+    ordering = ['-add_time']
+
+
+    refresh_times = (5,)
+    # # readonly_fields 和 exclude 的字段不要重复，否则会冲突
+    readonly_fields = ['spidername', 'status', 'img',
+                    'predict', 'desc', 'add_time']
+
+    model_icon = 'fa fa-file-o'
+
+
+class SpiderStatusAdmin:
+
+    #getdata
 
     data_charts = {
 
-        "countss": {'title': u"监控状态", "x-field": ("1990","1991","1992","1993","1994","1995"), "y-field": ("0，1，2，3，4，8",)},
+        "spider_monitor": {'title': u"监控状态", "x-field": ['1','2'], "y-field": ['1','2']},
         # "avg_count": {'title': u"Avg Report", "x-field": "date", "y-field": ('avg_count',), "order": ('date',)}
     }
-
+    refresh_times = (5,)
     # # readonly_fields 和 exclude 的字段不要重复，否则会冲突
     # readonly_fields = ['name','url', 'status', 'img',
     #                 'predict', 'desc', 'add_time']
@@ -52,8 +65,8 @@ class MonitorInfoAdmin:
     #     qs = super(MonitorInfoAdmin, self).queryset()
     #     return qs
 
-    model_icon = 'fa fa-user-plus'
+    model_icon = 'fa fa-file-o'
 
 xadmin.site.register(SpiderInfo, SpiderInfoAdmin)
-xadmin.site.register(MonitorInfo, MonitorInfoAdmin)
-
+xadmin.site.register(PredisctList, PredisctListAdmin)
+xadmin.site.register(SpiderStatus, SpiderStatusAdmin)
