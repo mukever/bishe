@@ -21,11 +21,12 @@ from bishe.settings import MEDIA_ROOT
 
 import xadmin
 
-
+from apps.api.views import predict
 
 urlpatterns = [
 
     url('admin/', xadmin.site.urls),
+    url(r'^predict/$', predict),
 
     #配置上传文件的访问处理函数
     url(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),

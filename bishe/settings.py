@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'extra_apps.xadmin',
     'crispy_forms',
     'users',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,8 +78,32 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bishe.wsgi.application'
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
 
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
+)
 
+CORS_ALLOW_HEADERS = (
+    'XMLHttpRequest',
+    'X_FILENAME',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'Pragma',
+)
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -159,7 +185,7 @@ EMAIL_FROM = 'mukever@163.com'
 MEDIA_CAP_ROOT = os.path.join(BASE_DIR, 'media/caps/sites/')
 MEDIA_CAP_DB_PATH = 'media/caps/sites/'
 
-
+MODEL_CAP_ROOT = os.path.join(BASE_DIR, 'media/models/')
 
 ######log
 

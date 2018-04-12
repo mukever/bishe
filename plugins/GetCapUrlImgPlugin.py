@@ -8,7 +8,7 @@ from bishe.settings import MEDIA_CAP_DB_PATH
 from xadmin.views import BaseAdminPlugin,  UpdateAdminView
 import xadmin
 
-class GetCapUrlImgAdmin(BaseAdminPlugin):
+class GetCapUrlImgPlugin(BaseAdminPlugin):
 
     say_hello = False
 
@@ -28,4 +28,4 @@ class GetCapUrlImgAdmin(BaseAdminPlugin):
 
 
 
-xadmin.site.register_plugin(GetCapUrlImgAdmin, UpdateAdminView)
+xadmin.site.register_plugin(GetCapUrlImgPlugin, UpdateAdminView)

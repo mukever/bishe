@@ -34,7 +34,7 @@ class YzmInfoAdmin:
     model_icon = 'fa fa-handshake-o'
 
 class YzmModelAdmin:
-    say_hello = True
+
     list_display = ['name','yzmname',
                     'desc', 'add_time']
     search_fields = ['name','yzmname',
@@ -56,7 +56,7 @@ class YzmModelAdmin:
 
 
 class TrainDataAdmin:
-    say_hello = True
+
     list_display = ['name','yzmname','path','nums','ratio',
                     'desc', 'add_time']
     search_fields =  ['name','yzmname','path','nums','ratio',
