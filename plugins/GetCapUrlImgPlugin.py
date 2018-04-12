@@ -5,12 +5,12 @@ from django.utils.safestring import mark_safe
 
 from GetCap import SaveImg
 from bishe.settings import MEDIA_CAP_DB_PATH
-from xadmin.views import BaseAdminPlugin,  UpdateAdminView
+from xadmin.views import BaseAdminPlugin, UpdateAdminView, ListAdminView, ModelFormAdminView
 import xadmin
 
 class GetCapUrlImgPlugin(BaseAdminPlugin):
 
-    say_hello = False
+    get_pic = False
 
     def init_request(self, *args, **kwargs):
 
@@ -28,4 +28,4 @@ class GetCapUrlImgPlugin(BaseAdminPlugin):
 
 
 
-xadmin.site.register_plugin(GetCapUrlImgPlugin, UpdateAdminView)
+xadmin.site.register_plugin(GetCapUrlImgPlugin, ModelFormAdminView)

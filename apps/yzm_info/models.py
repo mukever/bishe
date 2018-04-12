@@ -21,6 +21,12 @@ class YzmInfo(models.Model):
         verbose_name = '验证码信息'
         verbose_name_plural = verbose_name
 
+    def image_tag(self):
+        return u'<img width=100px src="%s%s" />' % (MEDIA_URL, self.img)
+
+    image_tag.short_description = '验证码图片(自动获取)'
+    image_tag.allow_tags = True
+
     def __str__(self):
         return self.name
 
