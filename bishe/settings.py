@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'reversion',
     'extra_apps.xadmin',
     'crispy_forms',
     'users',
@@ -183,8 +184,8 @@ EMAIL_FROM = 'mukever@163.com'
 #####cap img
 
 MEDIA_CAP_ROOT = os.path.join(BASE_DIR, 'media/caps/sites/')
-MEDIA_CAP_DB_PATH = 'media/caps/sites/'
-
+MEDIA_CAP_DB_PATH = 'caps/sites/'
+FILE_PATH_FIELD_DIRECTORY = 'media/data'
 MODEL_CAP_ROOT = os.path.join(BASE_DIR, 'media/models/')
 
 ######log

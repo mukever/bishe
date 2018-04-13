@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime
 
 # Create your models here.
+from bishe import settings
 from bishe.settings import MEDIA_URL
 
 
@@ -13,7 +14,7 @@ class YzmInfo(models.Model):
                                 default='1', verbose_name='是否可切割' )
     desc = models.TextField(verbose_name='描述',blank=True)
 
-    image_url = models.CharField(max_length=50, verbose_name='URL链接')
+    image_url = models.CharField(max_length=300, verbose_name='URL链接')
     img = models.ImageField(max_length=200,verbose_name='验证码图片(自动获取)',default='',blank=True,upload_to='caps/sites/')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 
@@ -24,7 +25,7 @@ class YzmInfo(models.Model):
     def image_tag(self):
         return u'<img width=100px src="%s%s" />' % (MEDIA_URL, self.img)
 
-    image_tag.short_description = '验证码图片(自动获取)'
+    image_tag.short_description = '验证码图片样例(自动获取)'
     image_tag.allow_tags = True
 
     def __str__(self):
@@ -48,7 +49,7 @@ class YzmModel(models.Model):
 class TrainData(models.Model):
     name = models.CharField(max_length=50, verbose_name='训练集名称')
     yzmname = models.ForeignKey(YzmInfo,verbose_name='待绑定验证码')
-    path = models.FilePathField(allow_folders=True,verbose_name='数据集路径')
+    path = models.FilePathField(allow_folders=True,verbose_name='数据集路径',path=settings.FILE_PATH_FIELD_DIRECTORY)
     nums = models.IntegerField(verbose_name='数据集大小')
     ratio = models.FloatField(max_length=20,verbose_name='测试集比例',default='0.25')
     #还有其他属性待 完成，目前就这几个。。。。 够中期答辩就行

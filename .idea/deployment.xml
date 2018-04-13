@@ -5,7 +5,7 @@
       <paths name="root@101.200.46.167:22">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/pycharm_project_470" local="$PROJECT_DIR$" />
+            <mapping deploy="/root/bishe" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
