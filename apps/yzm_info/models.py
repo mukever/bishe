@@ -62,3 +62,20 @@ class TrainData(models.Model):
 
     def __str__(self):
         return self.name
+
+class OperationSeri(models.Model):
+    name = models.CharField(max_length=50, verbose_name='训练集名称')
+    yzmname = models.ForeignKey(YzmInfo,verbose_name='待绑定验证码')
+    path = models.FilePathField(allow_folders=True,verbose_name='数据集路径',path=settings.FILE_PATH_FIELD_DIRECTORY)
+    nums = models.IntegerField(verbose_name='数据集大小')
+    ratio = models.FloatField(max_length=20,verbose_name='测试集比例',default='0.25')
+    #还有其他属性待 完成，目前就这几个。。。。 够中期答辩就行
+    desc = models.TextField(verbose_name='描述',blank=True)
+    add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
+
+    class Meta:
+        verbose_name = '处理序列'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name

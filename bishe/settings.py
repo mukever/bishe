@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'users',
     'yzm_info',
     'spider_monitor',
+    'api',
 
 ]
 
@@ -53,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -187,7 +188,10 @@ MEDIA_CAP_ROOT = os.path.join(BASE_DIR, 'media/caps/sites/')
 MEDIA_CAP_DB_PATH = 'caps/sites/'
 FILE_PATH_FIELD_DIRECTORY = 'media/data'
 MODEL_CAP_ROOT = os.path.join(BASE_DIR, 'media/models/')
-
+SITE_ROOT = '/'
 ######log
 
 DEBUG= True
+
+####api
+APPEND_SLASH=True

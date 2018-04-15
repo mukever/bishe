@@ -8,7 +8,7 @@ from .models import  UserProfile
 # ----- adminx 全局配置
 class BaseSetting:
     enable_themes = True
-    use_bootswatch = True
+    use_bootswatch = False
     show_bookmarks  = False
 
 

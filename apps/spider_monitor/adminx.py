@@ -1,11 +1,11 @@
 
 import xadmin
 from spider_monitor.models import SpiderInfo, PredisctList, SpiderStatus
-
+from .plugins import *
 
 class SpiderInfoAdmin:
 
-    list_display = ['name','url', 'yzmmodel', 'desc', 'add_time']
+    list_display = ['name','url', 'yzmmodel','status','status_tag','run_nums','predict_nums','desc', 'add_time']
     search_fields = ['name','url', 'yzmmodel', 'desc', 'add_time']
     list_filter = ['name','url', 'yzmmodel', 'desc', 'add_time']
 
@@ -29,15 +29,18 @@ class SpiderInfoAdmin:
 
 class PredisctListAdmin:
 
-    list_display = ['spidername', 'status', 'img',
-                    'predict', 'desc', 'add_time']
+
+    ###Echarts
+    turn_on_Echarts = True
+
+    list_display = ['yzmname','spidername',  'image_tag',
+                    'predict','status', 'desc', 'add_time']
     search_fields = ['spidername', 'status', 'img',
                     'predict', 'desc', 'add_time']
     list_filter = ['spidername', 'status', 'img',
                     'predict', 'desc', 'add_time']
     #
     ordering = ['-add_time']
-
 
     refresh_times = (5,)
     # # readonly_fields 和 exclude 的字段不要重复，否则会冲突
@@ -53,7 +56,7 @@ class SpiderStatusAdmin:
 
     data_charts = {
 
-        "spider_monitor": {'title': u"监控状态", "x-field": ['1','2'], "y-field": ['1','2']},
+        "spider_monitor": {'title': u"监控状态", "x-field": 'spidername', "y-field": ('ratio_nums'),"order":('add_time')},
         # "avg_count": {'title': u"Avg Report", "x-field": "date", "y-field": ('avg_count',), "order": ('date',)}
     }
     refresh_times = (5,)

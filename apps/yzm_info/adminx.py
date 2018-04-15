@@ -1,7 +1,6 @@
 import xadmin
 # from TextInputCounter import TextInputCounter
-from yzm_info.xadmin_action import MyAction
-from plugins.GetCapUrlImgPlugin import GetCapUrlImgPlugin,CreateCapUrlImgPlugin
+from .plugins import *
 from .models import YzmInfo, YzmModel, TrainData
 
 

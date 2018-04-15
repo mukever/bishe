@@ -3,7 +3,7 @@ from django.template.backends import django
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
-from .GetCap import SaveImg
+from .untils import SaveImg
 from bishe.settings import MEDIA_CAP_DB_PATH
 
 import xadmin
@@ -18,16 +18,6 @@ class GetCapUrlImgPlugin(BaseAdminPlugin):
 
     def init_request(self, *args, **kwargs):
 
-        # if  "img" not in self.request.POST:
-        #     print('open')
-        # else:
-        #     url = self.request.POST['image_url']
-        #     status,path = SaveImg(url)
-        #     if status:
-        #         self.request.POST['img'] = MEDIA_CAP_DB_PATH+path
-        #         print(self.request.POST)
-        #     else:
-        #         pass
         return bool(self.get_pic)
 
     def get_form_datas(self,params,*arg,**kwargs):

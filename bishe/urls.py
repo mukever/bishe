@@ -26,11 +26,17 @@ from apps.api.views import *
 urlpatterns = [
 
     url('admin/', xadmin.site.urls),
-    url(r'^predict/$', predict),
-    url(r'^huilianwang/$', huilianwang),
+
     #配置上传文件的访问处理函数
     url(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
+
+    # api URL
+    url(r'^api/', include('api.urls', namespace='api')),
 ]
+
+
+
+
 from bishe.settings import STATIC_ROOT, MEDIA_ROOT
 # 配置静态文件访问处理
 urlpatterns.append(url(r'^static/(?P<path>.*)$', serve, {'document_root': STATIC_ROOT}))
