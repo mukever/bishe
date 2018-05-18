@@ -7,7 +7,6 @@ from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext
 
 
-
 from spider_monitor.models import PredisctList, SpiderInfo
 from xadmin.plugins.utils import get_context_dict
 from xadmin.sites import site
@@ -86,7 +85,6 @@ class EChartsPlugin(BaseAdminPlugin):
 
         nodes.append(loader.render_to_string('plugins/echarts/echarts.html',
                                              context=get_context_dict(context)))
-
 
 
 # 注册插件

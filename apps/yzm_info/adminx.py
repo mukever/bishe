@@ -1,3 +1,5 @@
+from django.db.models import Model
+
 import xadmin
 # from TextInputCounter import TextInputCounter
 from .plugins import *
@@ -34,6 +36,8 @@ class YzmInfoAdmin(object):
 
 class YzmModelAdmin:
     # get_pic = True
+
+    turn_on_CreateModel = True
     list_display = ['name','yzmname',
                     'desc', 'add_time']
     search_fields = ['name','yzmname',
@@ -77,7 +81,11 @@ class TrainDataAdmin:
     save_on_top = False
     model_icon = 'fa fa-file-o'
 
+class YzmPipeAdmin:
+    pass
+
 
 xadmin.site.register(YzmInfo, YzmInfoAdmin)
 xadmin.site.register(YzmModel, YzmModelAdmin)
 xadmin.site.register(TrainData,TrainDataAdmin)
+# xadmin.site.register(Model,YzmPipeAdmin)

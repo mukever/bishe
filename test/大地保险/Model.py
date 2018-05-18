@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from com.liaoning.www.Classifier import *
+
 import time
 class Model:
 

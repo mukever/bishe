@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'yzm_info',
     'spider_monitor',
     'api',
+    'spiderproxy',
 
 ]
 

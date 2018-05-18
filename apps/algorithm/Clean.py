@@ -1,21 +1,10 @@
 # -*- coding:utf-8 -*-
 
-import urllib
-
 import cv2
 import numpy as np
 import os
 
-import requests
-from PIL import Image, ImageEnhance
-import matplotlib.pyplot as plt
-from numpy.linalg import linalg
-from numpy.random import random
-from scipy.ndimage import filters
-
-
 class Clean():
-
 
     def __init__(self,img_src_cv2):
         self.img_src_cv2 = img_src_cv2
@@ -102,70 +91,8 @@ class Clean():
                 else:
                     self.img_src_cv2[i,j] = 0
 
-    # 干扰线降噪
-    def interference_line(self):
 
-        h = self.img_src_cv2.shape[0]
-        w = self.img_src_cv2.shape[1]
-        # ！！！opencv矩阵点是反的
-        # img[1,2] 1:图片的高度，2：图片的宽度
-        for y in range(1, w - 1):
-            for x in range(1, h - 1):
-                count = 0
-                if any(self.img_src_cv2[x, y - 1]) > 245:
-                    count = count + 1
-                if any(self.img_src_cv2[x, y + 1]) > 245:
-                    count = count + 1
-                if any(self.img_src_cv2[x - 1, y]) > 245:
-                    count = count + 1
-                if any(self.img_src_cv2[x + 1, y]) > 245:
-                    count = count + 1
-                if count > 2:
-                    self.img_src_cv2[x, y] = 255
 
-    #根据字符颜色去除噪点
-    def deletepointByRGB(self):
-        R = [0 for i in range(0, 256)]
-        h = self.img_src_cv2.shape[0]
-        w = self.img_src_cv2.shape[1]
-        for i in range(h):
-            for j in range(w):
-               if(self.img_src_cv2[i][j] > (200,200,200)):
-                   pass
-                   # R[]
-
-    # 根据字符R颜色去除噪点
-    def deletepointByR(self):
-        R = [0 for i in range(0,256)]
-        h = self.img_src_cv2.shape[0]
-        w = self.img_src_cv2.shape[1]
-        for i in range(h):
-            for j in range(w):
-                # print(self.img_src_cv2[i][j][0])
-                R[self.img_src_cv2[i][j][0]]+=1
-        return R
-
-    # 根据字符G颜色去除噪点
-    def deletepointByG(self):
-        R = [0 for i in range(0, 256)]
-        h = self.img_src_cv2.shape[0]
-        w = self.img_src_cv2.shape[1]
-        for i in range(h):
-            for j in range(w):
-                # print(self.img_src_cv2[i][j][0])
-                R[self.img_src_cv2[i][j][1]] += 1
-        return R
-
-    # 根据字符B颜色去除噪点
-    def deletepointByB(self):
-        R = [0 for i in range(0, 256)]
-        h = self.img_src_cv2.shape[0]
-        w = self.img_src_cv2.shape[1]
-        for i in range(h):
-            for j in range(w):
-                # print(self.img_src_cv2[i][j][0])
-                R[self.img_src_cv2[i][j][2]] += 1
-        return R
 
     #打印处理结果
     def printcv2(self):
@@ -186,22 +113,21 @@ class Clean():
         return self.img_src_cv2
 
 
+    def runLiaoning(self):
+        # # self.addImage()
+        # self.printcv2()
+        # # thresh = icl.otsu(img_src_cv2)
+        self.binaryzation( power=1.0)
+        # self.printcv2()
+        return self.img_src_cv2
 
-
-        
 if __name__ == '__main__':
-    root = 'https://www.creditease.cn//servlet/validateCodeServlet?%27+new%20Date().getTime())'
-    resp = requests.get(root)
-    # print(resp.content)
-    image = np.asarray(bytearray(resp.content), dtype="uint8")
-    cv2_data = cv2.imdecode(image, cv2.IMREAD_COLOR)
 
-    clean = Clean(cv2_data)
-    # clean.printcv2()
-    clean.interference_line()
+    #img path
+    img_path = "2K95.jpg"
+    #read img
+    cv2_img = cv2.imread("")
+    clean = Clean(cv2_img)
+    cv2_img = clean.addImage()
+    cv2_img = clean.binaryzation()
     clean.printcv2()
-
-
-
-
-
