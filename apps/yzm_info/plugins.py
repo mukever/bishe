@@ -78,14 +78,14 @@ class CreateModelPlugin(BaseAdminPlugin):
 
 
     # # Media
-    # def get_media(self, media):
-    #
-    #     return media
+    def get_media(self, media):
+        media.add_js(['/media/plugins/createpipe/createpipe.js'])
+        return media
 
     # Block Views
     def block_results_top(self, context, nodes):
-        context.update({
-        })
+
+        print(get_context_dict(context))
         nodes.append(loader.render_to_string('plugins/models/models.html',
                                              context=get_context_dict(context)))
 

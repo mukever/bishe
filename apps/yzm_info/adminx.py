@@ -38,6 +38,9 @@ class YzmModelAdmin:
     # get_pic = True
 
     turn_on_CreateModel = True
+
+    list_export  =()
+    has_add_permission_bookmark = False
     list_display = ['name','yzmname',
                     'desc', 'add_time']
     search_fields = ['name','yzmname',

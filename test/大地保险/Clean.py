@@ -174,6 +174,10 @@ class Clean():
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    def save(self):
+        img = Image.fromarray(self.img_src_cv2)
+        img.save("temp.jpg","jpeg")
+
     def runBeijing(self):
         # self.addImage()
         th = self.otsu()
@@ -198,8 +202,9 @@ if __name__ == '__main__':
 
     clean = Clean(cv2_data)
     # clean.printcv2()
-    clean.interference_line()
-    clean.printcv2()
+    clean.binaryzation()
+    clean.save()
+
 
 
 

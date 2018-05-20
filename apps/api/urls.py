@@ -9,4 +9,7 @@ urlpatterns = [
     ##data
     url(r'^predictdata/$', PrediacListDataView.as_view(), name='predictdata'),
 
+    ##yzminfo
+    url(r'^getyzminfo/(?P<yzm_id>\d+)$', GetYzmInfoView.as_view(), name='getyzminfo'),
+
 ]

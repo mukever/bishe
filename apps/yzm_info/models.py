@@ -28,6 +28,26 @@ class YzmInfo(models.Model):
     image_tag.short_description = '验证码图片样例(自动获取)'
     image_tag.allow_tags = True
 
+    def toJSON(self):
+        fields = []
+        for field in self._meta.fields:
+            fields.append(field.name)
+        d = {}
+        print(fields)
+        import datetime
+        for attr in fields:
+            if isinstance(getattr(self, attr), datetime.datetime):
+                d[attr] = getattr(self, attr).strftime('%Y-%m-%d %H:%M:%S')
+            elif isinstance(getattr(self, attr), datetime.date):
+                d[attr] = getattr(self, attr).strftime('%Y-%m-%d')
+            else:
+                if attr =='img':
+                    d[attr] = self.img.name
+                else:
+                    d[attr] = getattr(self, attr)
+
+        return d
+
     def __str__(self):
         return self.name
 

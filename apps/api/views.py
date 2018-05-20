@@ -21,6 +21,7 @@ from keras.models import model_from_json
 from bishe.settings import MODEL_CAP_ROOT, MEDIA_CAP_ROOT, MEDIA_CAP_DB_PATH, MEDIA_URL, BASE_DIR
 from spider_monitor.models import SpiderInfo, PredisctList
 from spider_monitor.plugins import CJsonEncoder
+from yzm_info.models import YzmInfo
 from .vocab import *
 
 
@@ -258,3 +259,13 @@ def getTime():
     # 月份
     month = time.strftime('%m', time.localtime(time.time()))
     return year,month
+
+
+class GetYzmInfoView(View):
+
+    def get(self,request,yzm_id):
+        yzminfo = YzmInfo.objects.filter(id=yzm_id).first()
+        js = yzminfo.toJSON()
+        print(js)
+        return HttpResponse(json.dumps(js), content_type='application/json')
+
