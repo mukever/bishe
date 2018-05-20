@@ -29,12 +29,13 @@ var getyzminfo=function(id){
 
 
 var putdaratohtml=function(yzminfo){
-     $("#Y_id").html (yzminfo['id']);
-     $("#Y_name").html (yzminfo['name']);
-     $("#Y_desc").html (yzminfo['desc']);
-     $("#Y_image_url").html (yzminfo['image_url']);
-     document.getElementById('Y_img').src='http://127.0.0.1:8000/media/'+yzminfo['img'];
-     $("#Y_add_time").html (yzminfo['add_time']);
+    console.log("处理html")
+        console.log(yzminfo['yzmname']['img'])
+     $("#Y_name").html (yzminfo['yzmname']['name']);
+     $("#Y_desc").html (yzminfo['yzmname']['desc']);
+     $("#Y_image_url").html (yzminfo['yzmname']['image_url']);
+     document.getElementById('Y_img').src='http://127.0.0.1:8000/media/'+yzminfo['yzmname']['img'];
+     $("#Y_add_time").html (yzminfo['yzmname']['add_time']);
     console.log("赋值完成");
 
 }

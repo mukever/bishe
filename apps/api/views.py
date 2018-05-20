@@ -21,7 +21,7 @@ from keras.models import model_from_json
 from bishe.settings import MODEL_CAP_ROOT, MEDIA_CAP_ROOT, MEDIA_CAP_DB_PATH, MEDIA_URL, BASE_DIR
 from spider_monitor.models import SpiderInfo, PredisctList
 from spider_monitor.plugins import CJsonEncoder
-from yzm_info.models import YzmInfo
+from yzm_info.models import YzmInfo, YzmModel
 from .vocab import *
 
 
@@ -264,8 +264,10 @@ def getTime():
 class GetYzmInfoView(View):
 
     def get(self,request,yzm_id):
-        yzminfo = YzmInfo.objects.filter(id=yzm_id).first()
+        request.session["create_model_id"] = yzm_id
+        yzminfo = YzmModel.objects.filter(id=yzm_id).first()
         js = yzminfo.toJSON()
         print(js)
+        print(request.session["create_model_id"])
         return HttpResponse(json.dumps(js), content_type='application/json')
 

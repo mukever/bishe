@@ -48,11 +48,11 @@
 #     img = gov_session.get(captchaurl)
 #     temp_img = img.content
 #
-#     fp = open(MODEL_CAP_ROOT + "test/default-huilianwang.jpg", "wb")
+#     fp = open(MODEL_CAP_ROOT + "test/e997.jpg", "wb")
 #     fp.write(temp_img)
 #     fp.close()
 #
-#     image = Image.open(MODEL_CAP_ROOT+"test/default-huilianwang.jpg")
+#     image = Image.open(MODEL_CAP_ROOT+"test/e997.jpg")
 #     image = image.resize((90, 32), Image.BILINEAR)
 #     image.save(MODEL_CAP_ROOT+"test/default-huilianwang-change.jpg")
 #     # Lim = img.convert('L')

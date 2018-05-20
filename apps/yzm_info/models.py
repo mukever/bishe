@@ -63,6 +63,26 @@ class YzmModel(models.Model):
         verbose_name = '验证码模型'
         verbose_name_plural = verbose_name
 
+    def toJSON(self):
+        fields = []
+        for field in self._meta.fields:
+            fields.append(field.name)
+        d = {}
+        print(fields)
+        import datetime
+        for attr in fields:
+            if isinstance(getattr(self, attr), datetime.datetime):
+                d[attr] = getattr(self, attr).strftime('%Y-%m-%d %H:%M:%S')
+            elif isinstance(getattr(self, attr), datetime.date):
+                d[attr] = getattr(self, attr).strftime('%Y-%m-%d')
+            else:
+                if attr =='yzmname':
+                    d[attr] = self.yzmname.toJSON()
+                else:
+                    d[attr] = getattr(self, attr)
+
+        return d
+
     def __str__(self):
         return self.name
 

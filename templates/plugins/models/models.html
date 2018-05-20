@@ -1,38 +1,104 @@
+<div class="dashboard row">
 
- <!-- 为model准备一个具备大小（宽高）的Dom -->
-<div style="height: 400px">
+    <!--验证码基本信息-->
+    <div class="col-sm-12 column">
+        <div class="panel panel-default widget html">
 
-
-
-
-     <div class="btn-group">
-           <label class="col-sm-5 control-label"> 验证码模型选择:</label>
-            <div class="col-sm-7">
-                <select id="yzmname" name="yzmname" class="selectpicker show-tick form-control">
-
-                    {% for result in results %}
-                            <option value="{{ result.object.id }}">{{ result.object }}</option>
-                     {% endfor %}
-
-                </select>
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    1.模型对应验证码信息
+                </h3>
             </div>
+            <!-- 为model准备一个具备大小（宽高）的Dom -->
+            <div>
+
+                <div class="btn-group">
+                     <label class="col-sm-6 control-label"> 验证码选择:</label>
+                     <div class="col-sm-6">
+                        <select id="yzmname" name="yzmname" class="selectpicker show-tick form-control">
+
+                            {% for result in results %}
+                                    <option value="{{ result.object.id }}">{{ result.object }}</option>
+                             {% endfor %}
+
+                        </select>
+                    </div>
+                </div>
+
+                <br/>
+
+                <div id="yzminfo">
+                    <ul>验证码名称：
+                         <label id="Y_name"></label>
+                    </ul>
+
+                     <ul>验证码描述信息：
+                         <label id="Y_desc"></label>
+                    </ul>
+
+                     <ul>验证码样例：
+                         <img id="Y_img" src=""/>
+                    </ul>
+
+                     <ul>验证码网络URL：
+                         <label id="Y_image_url"></label>
+                    </ul>
+                    <ul>验证码添加时间：
+                         <label id="Y_add_time"></label>
+                    </ul>
+                </div>
+
+
+{#                <ul class="pagination pagination-sm pagination-left pagination-inline">#}
+{##}
+{#                   <button  type="button"  id="TestBtn" class="btn btn-default dropdown-toggle btn-lg"><span>点击测试按钮</span></button>#}
+{##}
+{#                </ul>#}
+
+            </div>
+        </div>
     </div>
 
 
-    <div id="yzminfo">
-        <label id="Y_id"></label>
-        <label id="Y_name"></label>
-        <label id="Y_desc"></label>
-        <img id="Y_img" src=""/>
-        <label id="Y_image_url"></label>
-        <label id="Y_add_time"></label>
+
+    <!--验证码统计验证码图像信息-->
+    <div class="col-sm-12 column">
+        <div class="panel panel-default widget html">
+
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    2.统计验证码图像信息
+                </h3>
+            </div>
+
+            <div style="height: 200px">
+
+                <div class="btn-group">
+                     <label class="col-sm-6 control-label">像素信息</label>
+                     <div class="col-sm-6">
+                        该处为验证码像素信息统计
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
+    <!--验证码去燥效果图-->
+    <div class="col-sm-12 column">
+        <div class="panel panel-default widget html">
 
-    <ul class="pagination pagination-sm pagination-left pagination-inline">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    3.验证码去燥效果图
+                </h3>
+            </div>
+            <!-- 为model准备一个具备大小（宽高）的Dom -->
+            <div >
 
-       <button  type="button"  id="TestBtn" class="btn btn-default dropdown-toggle btn-lg"><span>点击测试</span></button>
 
-    </ul>
+            </div>
+        </div>
+    </div>
 
 </div>

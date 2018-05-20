@@ -80,6 +80,9 @@ class CreateModelPlugin(BaseAdminPlugin):
     # # Media
     def get_media(self, media):
         media.add_js(['/media/plugins/createpipe/createpipe.js'])
+        media.add_js(['/static/xadmin/js/xadmin.plugin.portal.js'])
+        media.add_js(['/static/xadmin/js/xadmin.page.dashboard.js'])
+        # media = media +self.vendor('/static/xadmin/css/xadmin.page.dashboard.css')
         return media
 
     # Block Views

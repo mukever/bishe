@@ -30,12 +30,12 @@ if __name__ == '__main__':
     img = gov_session.get(captchaurl,headers=headers)
     temp_img = img.content
 
-    fp = open("default-huilianwang.jpg", "wb")
+    fp = open("e997.jpg", "wb")
     fp.write(temp_img)
     fp.close()
 
 
-    image = Image.open("default-huilianwang.jpg")
+    image = Image.open("e997.jpg")
     image = image.resize((90, 32),Image.BILINEAR)
     # Lim = img.convert('L')
 
