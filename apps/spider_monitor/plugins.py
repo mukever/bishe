@@ -1,11 +1,10 @@
 import datetime
 import json
 
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.template import loader
 from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext
-
 
 from spider_monitor.models import PredisctList, SpiderInfo
 from xadmin.plugins.utils import get_context_dict
@@ -38,17 +37,37 @@ def getEchartsData():
         spider_id = spiderid['id']
         results = PredisctList.objects.filter(spidername=spider_id).extra(select=select).values('minute').annotate(
             sum=Sum('status'))
+        all_results = (PredisctList.objects.filter(spidername=spider_id).extra(select=select).values('minute').annotate(
+            sum=Count('status')))
         # print('size',results.__len__())
         # print(spiderid['name'])
         data_sum_list = []
         data_date_list = []
+
+        all_data_sum_list = []
+        all_data_date_list = []
+
         #####封装数据
         if results.__len__() == 0:
             continue
         for result in results:
             data_sum_list.append(result['sum'])
             data_date_list.append(result['minute'])
-        data['data_sum'] = data_sum_list
+
+        for result in all_results:
+            all_data_sum_list.append(result['sum'])
+            all_data_date_list.append(result['minute'])
+
+        # print(data_sum_list)
+        # print(data_date_list)
+        # print(all_data_sum_list)
+        # print(all_data_date_list)
+        #
+        # print([ data_sum_list[i]/all_data_sum_list[i]*100 for i in range(len(data_sum_list)) ])
+
+        point_data = [ data_sum_list[i]/all_data_sum_list[i]*100 for i in range(len(data_sum_list)) ]
+
+        data['data_sum'] = point_data
         data['data_date'] = data_date_list
         data['spider_name'] = spiderid['name']
         All_data.append(data)
@@ -57,6 +76,10 @@ def getEchartsData():
 
     Echart_data_json = json.dumps(Echart_data,cls=CJsonEncoder)
     print(Echart_data_json)
+    ds = json.dumps(Echart_data_json)
+    print("ds type:", type(ds), "ds:", ds)
+    l = json.loads(ds)
+    print(l)
     return Echart_data_json
 
 

@@ -60,7 +60,7 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 model.summary()
-model.fit_generator (gen(), samples_per_epoch=6400, nb_epoch=5,
+model.fit_generator (gen(), samples_per_epoch=320, nb_epoch=5,
                     validation_data=gen(), nb_val_samples=64)
 
 X, y = next(gen(1))

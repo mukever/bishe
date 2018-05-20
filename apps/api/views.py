@@ -76,11 +76,11 @@ class SpiderThread(threading.Thread):
         try:
             super(SpiderThread, self).__init__()
             self.spider = spider
-            self.posturl = 'https://ln.122.gov.cn/m/publicquery/scores/?jszh=sadasd&dabh=123456789012&captcha=%s'
+            self.posturl = 'https://hn.122.gov.cn/m/publicquery/scores/?jszh=sadasd&dabh=123456789012&captcha=%s'
             self.header = {
                'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
 
-                'Referer':'https://ln.122.gov.cn/views/inquiry.html',
+                'Referer':'https://hn.122.gov.cn/views/inquiry.html',
                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
 
                }
@@ -128,7 +128,7 @@ class SpiderThread(threading.Thread):
                 fp = open(folder_path + temp_name , "wb")
                 fp.write(temp_img)
                 fp.close()
-
+                print(folder_path+temp_name)
                 #####read img
                 image = Image.open(folder_path + temp_name)
 
@@ -197,8 +197,6 @@ class PrediacListDataView(View):
             data_json = json.dumps(data, cls=CJsonEncoder)
             print(data_json)
             return HttpResponse(data_json)
-
-
 
 
 def getPreDiactData():
