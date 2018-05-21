@@ -12,10 +12,11 @@ image = Image.open("/Users/diamond/PycharmProjects/bishe/test/大地保险/jcapt
 image_array = np.array(image)
 
 plt.subplot(2,1,1)
-plt.imshow(image,cmap=cm.gray)
+plt.imshow(image)
 plt.axis("off")
 plt.subplot(2,1,2)
 plt.hist(image_array.flatten(),256) #flatten可以将矩阵转化成一维序列
+plt.savefig('filename.png')
 plt.show()
 import matplotlib.pyplot as plt
 

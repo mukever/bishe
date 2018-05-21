@@ -12,4 +12,9 @@ urlpatterns = [
     ##yzminfo
     url(r'^getyzminfo/(?P<yzm_id>\d+)$', GetYzmInfoView.as_view(), name='getyzminfo'),
 
+    ##yzmpixelinfo
+    url(r'^getyzmpixelinfo/$', GetImgPixelInfoView.as_view(), name='getyzmpixelinfo'),
+
+    ##yzmcutinfo
+    url(r'^getyzmcutinfo/$', GetImgCutInfoView.as_view(), name='getyzmcutinfo'),
 ]

@@ -3,6 +3,11 @@ import threading
 import time
 import traceback
 
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
+import matplotlib.cm as cm
 from django.conf.urls import url
 from django.db.models import Sum, Count
 from django.shortcuts import render
@@ -18,6 +23,8 @@ from PIL import Image
 from django.views.generic.base import View
 from keras.models import model_from_json
 
+from Clean import Clean
+from CutUtils import CutUtils
 from bishe.settings import MODEL_CAP_ROOT, MEDIA_CAP_ROOT, MEDIA_CAP_DB_PATH, MEDIA_URL, BASE_DIR
 from spider_monitor.models import SpiderInfo, PredisctList
 from spider_monitor.plugins import CJsonEncoder
@@ -265,7 +272,143 @@ class GetYzmInfoView(View):
         request.session["create_model_id"] = yzm_id
         yzminfo = YzmModel.objects.filter(id=yzm_id).first()
         js = yzminfo.toJSON()
+        print(js['yzmname']['image_url'])
+
+        #获取图片信息temp存入session 临时处理过程
+        try:
+            img = requests.get(js['yzmname']['image_url'])
+            temp_img = img.content
+            ######save pic
+            temp_name = str(datetime.now()) + ".jpg"
+
+            ##path
+            #### create folder
+            year, month = getTime()
+            medile_path = js['yzmname']['name'] + '/' + str(year) + '/' + str(month) + '/'
+            ###path
+            folder_path = MEDIA_CAP_ROOT + medile_path
+            folder = os.path.exists(folder_path)
+            print(folder)
+            if not folder:
+                os.makedirs(folder_path)
+            fp = open(folder_path + temp_name, "wb")
+            fp.write(temp_img)
+            fp.close()
+            # print(folder_path + temp_name)
+            db_path = MEDIA_CAP_DB_PATH + medile_path + temp_name
+            request.session["temp_img_name"] = folder_path + temp_name
+            request.session["yzmname"] = js['yzmname']['name']
+
+            js['media_img'] = db_path
+        except Exception as e:
+            js['media_img'] =js['yzmname']['img']
+            print("获取网络图片出错")
         print(js)
-        print(request.session["create_model_id"])
         return HttpResponse(json.dumps(js), content_type='application/json')
 
+
+
+class GetImgPixelInfoView(View):
+
+    def get(self,request):
+        try:
+            img_path = request.session["temp_img_name"]
+            # 打开图像
+            image = Image.open(img_path)
+            image_array = np.array(image)
+
+            plt.subplot(2, 1, 1)
+            plt.imshow(image)
+            plt.axis("off")
+            plt.subplot(2, 1, 2)
+            plt.hist(image_array.flatten(), 256)  # flatten可以将矩阵转化成一维序列
+
+
+            ##设置原图图片位置
+            temp_name = str(datetime.now()) + ".jpg"
+            year, month = getTime()
+            medile_path = request.session["yzmname"] + '/' + str(year) + '/' + str(month) + '/'
+            ###path
+            folder_path = MEDIA_CAP_ROOT + medile_path
+            folder = os.path.exists(folder_path)
+            print(folder)
+            if not folder:
+                os.makedirs(folder_path)
+            plt.savefig(folder_path+temp_name)
+            db_path = MEDIA_CAP_DB_PATH + medile_path + temp_name
+
+            request.session["yzmpixelinfo"] = db_path
+            request.session["file_yzmpixelinfo"] = folder_path+temp_name
+
+            ##设置灰度图片位置
+            # 打开图像
+            image = Image.open(img_path).convert("L")
+            image_array = np.array(image)
+
+            plt.subplot(2, 1, 1)
+            plt.imshow(image)
+            plt.axis("off")
+            plt.subplot(2, 1, 2)
+            plt.hist(image_array.flatten(), 256)  # flatten可以将矩阵转化成一维序列
+            temp_name = str(datetime.now()) + ".jpg"
+            year, month = getTime()
+            medile_path = request.session["yzmname"] + '/' + str(year) + '/' + str(month) + '/'
+            ###path
+            folder_path = MEDIA_CAP_ROOT + medile_path
+            folder = os.path.exists(folder_path)
+            print(folder)
+            if not folder:
+                os.makedirs(folder_path)
+            plt.savefig(folder_path + temp_name)
+            db_pathgray = MEDIA_CAP_DB_PATH + medile_path + temp_name
+
+            request.session["yzmpixelinfogray"] = db_path
+            request.session["file__gray_yzmpixelinfo"] = folder_path + temp_name
+
+            return HttpResponse(json.dumps({'pixel': db_path,'pixelgray':db_pathgray}), content_type='application/json')
+        except Exception as e:
+            print("出错")
+            return HttpResponse(json.dumps({'pixel':'error'}), content_type='application/json')
+
+
+class GetImgCutInfoView(View):
+
+    def post(self,request):
+        try:
+            img_path = request.session["temp_img_name"]
+            labelstring = request.POST.get("label")
+            charnumber = len(labelstring)
+            neednumber = int(request.POST.get("neednumber"))
+            # read img
+            print("labelstring",labelstring)
+            print('neednumber',neednumber)
+            print('img_path',img_path)
+            cv2_img = cv2.imread(img_path)
+            clean = Clean(cv2_img)
+            clean.deleteblackByRGB()
+            clean.addImage()
+            cv2_img = clean.binaryzation(power=1.0)
+
+            cututils = CutUtils(cv2_img, charnumber, labelstring, neednumber)
+            cututils.cut()
+            cut_img_list = []
+            for i in range(len(cututils.im_list)):
+                temp_name = str(datetime.now()) + ".jpg"
+                year, month = getTime()
+                medile_path = request.session["yzmname"] + '/' + str(year) + '/' + str(month) + '/'
+                ###path
+                folder_path = MEDIA_CAP_ROOT + medile_path
+                folder = os.path.exists(folder_path)
+                print(folder)
+                if not folder:
+                    os.makedirs(folder_path)
+
+                db_path = MEDIA_CAP_DB_PATH + medile_path + temp_name
+                cv2.imwrite(folder_path + temp_name, cututils.im_list[i])
+                cut_img_list.append(db_path)
+            print(json.dumps({'cut': cut_img_list}))
+            return HttpResponse(json.dumps({'cut': cut_img_list}), content_type='application/json')
+        except Exception as e:
+            print(e.with_traceback())
+            print("出错")
+            return HttpResponse(json.dumps({'cut':'error'}), content_type='application/json')

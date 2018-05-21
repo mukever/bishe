@@ -1,3 +1,11 @@
+<style type="text/css">
+img.one
+{
+border-style: solid;
+border-color: #0000ff
+}
+</style>
+
 <div class="dashboard row">
 
     <!--验证码基本信息-->
@@ -71,14 +79,20 @@
                 </h3>
             </div>
 
-            <div style="height: 200px">
+            <div style="height: 500px">
 
-                <div class="btn-group">
-                     <label class="col-sm-6 control-label">像素信息</label>
-                     <div class="col-sm-6">
-                        该处为验证码像素信息统计
+                <div class="group">
+                     <div class="col-sm-6" >
+                         原图像素
+                         <img src="#" id="Y_imgpixelinfo"  >
                     </div>
                 </div>
+
+                     <div class="col-sm-6" >
+                         灰度图像素
+                         <img src="#" id="Y_imgpixelinfogray"  >
+                    </div>
+
 
             </div>
         </div>
@@ -108,15 +122,45 @@
 
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    3.验证码去燥效果图
+                    4.验证码切分效果图
                 </h3>
             </div>
             <!-- 为model准备一个具备大小（宽高）的Dom -->
-            <div >
+            <div  style="height: 400px">
+
+
+{#                 <div class="group">#}
+{#                     <label > 请输入该验证码的正确Label:</label>#}
+{##}
+{#                      <input type="text" id="img_label">#}
+{#                 </div>#}
+{##}
+{#                  <div class="group">#}
+{##}
+{#                      <label class="col-sm-6 control-label"> 选择待识别字符数:</label>#}
+{#                      <div>#}
+{#                        <select id="yzmneed" class="selectpicker show-tick form-control">#}
+{##}
+{##}
+{#                              <option value="4">4</option>#}
+{##}
+{##}
+{#                        </select>#}
+{#                    </div>#}
+{#                  </div>#}
+
+
+
+                <div class="group" id="cutInfo">
+
+                </div>
 
 
             </div>
+              <input type="button" id="Y_Submit" value="获取切分信息">
         </div>
+
+
     </div>
 
 </div>
