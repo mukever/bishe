@@ -34,7 +34,6 @@ six==1.11.0
 sqlparse==0.2.4
 tablib==0.11.5
 tensorflow==1.1.0
-Theano==1.0.1+2.gcd195ed
 tinycss==0.4
 tinycss2==0.6.1
 unicodecsv==0.14.1

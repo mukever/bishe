@@ -10,6 +10,13 @@
             </list>
           </settings>
         </remote-mappings>
+        <remote-mappings server-id="python@sftp://diamond@192.168.56.101:22/home/diamond/anaconda3/bin/python3.6">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$" remote-root="/home/diamond/Pycharmprojects/bishe" />
+            </list>
+          </settings>
+        </remote-mappings>
       </list>
     </list>
   </component>

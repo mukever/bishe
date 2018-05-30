@@ -6,7 +6,7 @@ import numpy as np
 '''
 class Vocab():
     def __init__(self):
-        self.vocab = "123456789ABCDEFGHIJKLMNPQRSTUVWXYqwertyuipasdfghjklxcvbnm"
+        self.vocab = "0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ"
         self.size = len(self.vocab)
         indices = range(self.size)
         self.index = dict(zip(self.vocab, indices))

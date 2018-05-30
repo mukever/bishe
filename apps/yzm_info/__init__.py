@@ -1,1 +1,0 @@
-default_app_config = "yzm_info.apps.YzmInfoConfig"

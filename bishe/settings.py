@@ -43,10 +43,9 @@ INSTALLED_APPS = [
     'extra_apps.xadmin',
     'crispy_forms',
     'users',
-    'yzm_info',
-    'spider_monitor',
+    'yzminfo',
+    'monitor',
     'api',
-    'spiderproxy',
 
 ]
 
