@@ -116,7 +116,7 @@ DATABASES = {
         'NAME': 'bishe',
         'USER': 'root',
         'PASSWORD': '123456',
-        'HOST': '192.168.56.101',
+        'HOST': '101.200.46.167',
         'PORT': '3306',
     }
 }

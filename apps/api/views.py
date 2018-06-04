@@ -6,6 +6,8 @@ import numpy as np
 from PIL import Image
 
 from django.conf.urls import url
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db.models import Sum, Count
 from django.shortcuts import render
 from datetime import datetime
@@ -14,19 +16,33 @@ from datetime import datetime
 
 #predict
 import os
-from django.http import HttpResponse, response, HttpResponseRedirect, request
+from django.http import HttpResponse, HttpResponseRedirect
 import requests
 from PIL import Image
 from django.views.generic.base import View
-from keras.models import model_from_json
+import caffe
+from imageio import save
 
-from bishe.settings import MODEL_CAP_ROOT, MEDIA_CAP_ROOT, MEDIA_CAP_DB_PATH, MEDIA_URL, BASE_DIR
+from .postutils import  chaojicheck
+from bishe.settings import MODEL_CAP_ROOT, MEDIA_CAP_ROOT, MEDIA_CAP_DB_PATH, MEDIA_URL, BASE_DIR,  \
+    MEDIA_API_PATH
 from monitor.models import SpiderInfo, PredisctList
 from monitor.plugins import CJsonEncoder
-from yzminfo.models import YzmInfo
 from .vocab import *
+from bishe.settings import MEDIA_CAFFE_PATH, MEDIA_CAFFE_PROTOTXT_PATH, MEDIA_CAFFE_LABEL_PATH
 
+deploy = MEDIA_CAFFE_PROTOTXT_PATH  # deploy文件
+caffe_model = MEDIA_CAFFE_PATH  # 训练好的 caffemodel
+labels_filename = MEDIA_CAFFE_LABEL_PATH  # 类别名称文件，将数字标签转换回类别名称
+LABELS = np.loadtxt(labels_filename, str, delimiter='\n')   #读取类别名称文件
+CAFFENET = caffe.Net(deploy, caffe_model, caffe.TEST)  # 加载model和network
 
+# 图片预处理设置
+Transformer = caffe.io.Transformer({'data': CAFFENET.blobs['data'].data.shape})  # 设定图片的shape格式(1,3,28,28)
+Transformer.set_transpose('data', (2, 0, 1))  # 改变维度的顺序，由原始图片(28,28,3)变为(3,28,28)
+Transformer.set_mean('data', np.array([104, 117, 123]))  # 减去均值，前面训练模型时没有减均值，这儿就不用
+Transformer.set_raw_scale('data', 255)  # 缩放到【0，255】之间
+Transformer.set_channel_swap('data', (2, 1, 0))  # 交换通道，将图片由RGB变为BGR
 
 
 class SpiderControView(View):
@@ -66,34 +82,14 @@ class SpiderControView(View):
 
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-
         # print(json.dumps(res))
-
-
-
 
 class SpiderThread(threading.Thread):
     def __init__(self, spider):
         try:
             super(SpiderThread, self).__init__()
             self.spider = spider
-            self.posturl = 'https://hn.122.gov.cn/m/publicquery/scores/?jszh=sadasd&dabh=123456789012&captcha=%s'
-            self.header = {
-               'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
 
-                'Referer':'https://hn.122.gov.cn/views/inquiry.html',
-               'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
-               }
-
-            # self.data = {
-            #
-            # }
-
-            ####load model
-            print('loadmodel::', self.spider.update_model.path)
-            print('loadcnn:::', self.spider.update_net.path)
-            self.model = model_from_json(open(self.spider.update_net.path).read())
-            self.model.load_weights(self.spider.update_model.path)
         except Exception as e:
             traceback.print_exc()
         finally:
@@ -103,7 +99,6 @@ class SpiderThread(threading.Thread):
 
     def run(self):
         try:
-
 
             #### create folder
             year, month = getTime()
@@ -118,7 +113,11 @@ class SpiderThread(threading.Thread):
             ######download pic
             _session = requests.session()
 
-            for i in range(20):
+            ecpohs = 10
+            if self.spider.needcheck == '1':
+                ecpohs=30
+
+            for i in range(ecpohs):
                 img = _session.get(self.spider.url.image_url)
                 temp_img = img.content
 
@@ -130,32 +129,23 @@ class SpiderThread(threading.Thread):
                 fp.close()
                 print(folder_path+temp_name)
                 #####read img
-                image = Image.open(folder_path + temp_name)
-
+                im = caffe.io.load_image(folder_path + temp_name)  # 加载图片
                 ### detail
-                wide, high = image.size
-                for j in range(wide):
-                    image.putpixel((j, 0), (255, 255, 255))
-                for j in range(high):
-                    image.putpixel((0, j), (255, 255, 255))
-                X_ = np.empty((1, 32, 90, 3), dtype='float32')
-
+                CAFFENET.blobs['data'].data[...] = Transformer.preprocess('data', im)  # 执行上面设置的图片预处理操作，并将图片载入到blob中
                 ### predict
-                X_[0] = np.array(image) / 255
-                Y_pred = self.model.predict(X_, 1, 1)
-                Pred_text = Vocab().one_hot_to_text(Y_pred[0])
-                print(Pred_text)
-                temp_url = self.posturl % (Pred_text)
-                reconvene = _session.post(temp_url ,headers= self.header)
-                code = json.loads(reconvene.content.decode('utf8'))['code']
-                print(reconvene.content.decode('utf8'))
-                ####('1', '正确'), ('0', '错误')
+                CAFFENET.forward()
+                Predisct = ""
                 pre_st = 0
-                # print(type(code))
-                if code ==404:
-                    pre_st = 1
-                else:
-                    pass
+                for i in range(1, int(self.spider.url.tag)+1):
+                    # print('---------------------\n',net.blobs['fc1000'+str(i)].data)
+                    prob = CAFFENET.blobs['fc1000' + str(i)].data[0].flatten()  # 取出最后一层（Softmax）属于某个类别的概率值，并打印
+                    # print (prob)
+                    order = prob.argsort()[-1]  # 将概率值排序，取出最大值所在的序号
+                    # print(order)
+                    Predisct+=LABELS[order]  # 将该序号转换成对应的类别名称，并打印
+                print(Predisct)
+                if self.spider.needcheck=='2':
+                    pre_st = chaojicheck(folder_path+temp_name,Predisct,self.spider.url.tag)
 
                 db_path = MEDIA_CAP_DB_PATH+medile_path+temp_name
 
@@ -165,7 +155,7 @@ class SpiderThread(threading.Thread):
                 predict_model.yzmname = self.spider.url
                 predict_model.status = pre_st
                 predict_model.img = db_path
-                predict_model.predict = Pred_text
+                predict_model.predict = Predisct
                 temp_time = datetime.now()
                 print(temp_time)
                 predict_model.add_time = temp_time
@@ -198,6 +188,44 @@ class PrediacListDataView(View):
             print(data_json)
             return HttpResponse(data_json)
 
+class PredictAPI(View):
+
+    def get(self,request):
+
+        data = {'code':'1234'}
+        data_json = json.dumps(data)
+        print(data_json)
+        return HttpResponse(data_json)
+    def post(self,request):
+
+
+        img = request.FILES.get('pic')
+        tag  = request.POST.get('tag')
+        destination = open(MEDIA_API_PATH, 'wb+')  # 打开特定的文件进行二进制的写操作
+        destination.write(img.read())
+        destination.close()
+
+        ###caffe
+        im = caffe.io.load_image(MEDIA_API_PATH)  # 加载图片
+        ### detail
+        CAFFENET.blobs['data'].data[...] = Transformer.preprocess('data', im)  # 执行上面设置的图片预处理操作，并将图片载入到blob中
+        ### predict
+        CAFFENET.forward()
+        Predisct = ""
+        pre_st = 0
+        for i in range(1, int(tag) + 1):
+            # print('---------------------\n',net.blobs['fc1000'+str(i)].data)
+            prob = CAFFENET.blobs['fc1000' + str(i)].data[0].flatten()  # 取出最后一层（Softmax）属于某个类别的概率值，并打印
+            # print (prob)
+            order = prob.argsort()[-1]  # 将概率值排序，取出最大值所在的序号
+            # print(order)
+            Predisct += LABELS[order]  # 将该序号转换成对应的类别名称，并打印
+        print(Predisct)
+
+        data = {'code': Predisct}
+        data_json = json.dumps(data)
+        print(data_json)
+        return HttpResponse(data_json)
 
 def getPreDiactData():
     select = {'minute': "CAST(DATE_FORMAT(add_time, '%%Y-%%m-%%d %%H-%%i--01') AS DATETIME)"}
@@ -257,7 +285,6 @@ def getTime():
     # 月份
     month = time.strftime('%m', time.localtime(time.time()))
     return year,month
-
 
 
 

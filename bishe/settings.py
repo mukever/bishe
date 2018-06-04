@@ -189,9 +189,13 @@ MEDIA_CAP_DB_PATH = 'caps/sites/'
 FILE_PATH_FIELD_DIRECTORY = 'media/data'
 MODEL_CAP_ROOT = os.path.join(BASE_DIR, 'media/models/')
 SITE_ROOT = '/'
-######log
+######caffe model
+MEDIA_CAFFE_PATH = os.path.join(BASE_DIR, 'media/models/caffemodel/caffe2.caffemodel')
+MEDIA_CAFFE_PROTOTXT_PATH = os.path.join(BASE_DIR, 'media/models/caffemodel/deploy.prototxt')
+MEDIA_CAFFE_LABEL_PATH = os.path.join(BASE_DIR, 'media/models/caffemodel/label-map.txt')
 
 DEBUG= True
 
 ####api
-APPEND_SLASH=True
+APPEND_SLASH=False
+MEDIA_API_PATH = os.path.join(BASE_DIR, 'media/caps/sites/api/temp.jpg')

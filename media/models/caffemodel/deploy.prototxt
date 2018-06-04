@@ -1,4 +1,4 @@
-name: "BBS125"
+name: "ResNet18-Change"
 layer {
   name: "data"
   type: "Input"

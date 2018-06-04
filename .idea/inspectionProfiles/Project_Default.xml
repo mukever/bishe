@@ -4,7 +4,7 @@
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
-          <list size="74">
+          <list size="75">
             <item index="0" class="java.lang.String" itemvalue="bs4" />
             <item index="1" class="java.lang.String" itemvalue="decorator" />
             <item index="2" class="java.lang.String" itemvalue="pydot" />
@@ -79,6 +79,7 @@
             <item index="71" class="java.lang.String" itemvalue="tensorflow" />
             <item index="72" class="java.lang.String" itemvalue="PyYAML" />
             <item index="73" class="java.lang.String" itemvalue="protobuf" />
+            <item index="74" class="java.lang.String" itemvalue="six" />
           </list>
         </value>
       </option>

@@ -6,8 +6,10 @@ urlpatterns = [
     ##cont
     url(r'^spidercontro/(?P<spider_id>\d+)$', SpiderControView.as_view(), name='spidercontro'),
     #
-    # ##data
-    # url(r'^predictdata/$', PrediacListDataView.as_view(), name='predictdata'),
+    ##data
+    url(r'^predictdata/$', PrediacListDataView.as_view(), name='predictdata'),
+    ##data
+    url(r'^predict/$', PredictAPI.as_view(), name='predict'),
     #
     # ##yzminfo
     # url(r'^getyzminfo/(?P<yzm_id>\d+)$', GetYzmInfoView.as_view(), name='getyzminfo'),

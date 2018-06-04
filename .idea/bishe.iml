@@ -20,7 +20,7 @@
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/algorithm" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.6.4 (sftp://diamond@192.168.56.101:22/home/diamond/anaconda3/bin/python3.6)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Remote Python 3.6.5 (sftp://root@101.200.46.167:22/root/anaconda3/envs/bishe/bin/python3.6)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">

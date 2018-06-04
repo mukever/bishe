@@ -5,14 +5,33 @@
 # sys.path.append("/Users/diamond/envs/CTPN8/caffe/python/caffe")
 import caffe
 import numpy as np
-root='./modelfile/'   #根目录
-deploy=root + 'deploy.prototxt'    #deploy文件
+
+from api.vocab import Vocab
+from bishe.settings import MEDIA_CAFFE_PATH, MEDIA_CAFFE_PROTOTXT_PATH, MEDIA_CAFFE_LABEL_PATH
+
+import matplotlib.pyplot as plt
+# 编写一个函数，用于显示各层的参数
+def show_feature(data, padsize=1, padval=0):
+    data -= data.min();
+    data /= data.max();
+
+    # force the number of filters to be square
+    n = int(np.ceil(np.sqrt(data.shape[0])));
+    padding = ((0, n ** 2 - data.shape[0]), (0, padsize), (0, padsize)) + ((0, 0),) * (data.ndim - 3);
+    data = np.pad(data, padding, mode='constant', constant_values=(padval, padval));
+
+    # tile the filters into an image
+    data = data.reshape((n, n) + data.shape[1:]).transpose((0, 2, 1, 3) + tuple(range(4, data.ndim + 1)));
+    data = data.reshape((n * data.shape[1], n * data.shape[3]) + data.shape[4:]);
+    plt.imshow(data);
+    plt.axis('off');
+deploy=MEDIA_CAFFE_PROTOTXT_PATH   #deploy文件
 # deploy='./resnet18.prototxt'    #deploy文件
 # caffe_model=root + 'caffe.caffemodel'   #训练好的 caffemodel
-caffe_model=root + 'caffe.caffemodel'   #训练好的 caffemodel
-img=root+'images/1.png'    #随机找的一张待测图片
-labels_filename = root + 'label-map.txt'  #类别名称文件，将数字标签转换回类别名称
+caffe_model=MEDIA_CAFFE_PATH  #训练好的 caffemodel
 
+labels_filename =MEDIA_CAFFE_LABEL_PATH  #类别名称文件，将数字标签转换回类别名称
+img='./0.png'    #随机找的一张待测图片
 net = caffe.Net(deploy,caffe_model,caffe.TEST)   #加载model和network
 print(net.blobs['data'].data.shape)
 
@@ -32,10 +51,29 @@ out = net.forward()
 for layer_name, blob in net.blobs.items():
     print (layer_name + '\t' + str(blob.data.shape))
 labels = np.loadtxt(labels_filename, str, delimiter='\n')   #读取类别名称文件
-for i in range(1,11):
-    print('---------------------\n',net.blobs['fc1000'+str(i)].data)
+vocab = Vocab()
+# print(labels)
+# print(vocab.vocab)
+for i in range(1,5):
+
+    # print('---------------------\n',net.blobs['fc1000'+str(i)].data)
     prob= net.blobs['fc1000'+str(i)].data[0].flatten() #取出最后一层（Softmax）属于某个类别的概率值，并打印
     # print (prob)
     order=prob.argsort()[-1]  #将概率值排序，取出最大值所在的序号
     # print(order)
     print ('the class is:',labels[order] )  #将该序号转换成对应的类别名称，并打印
+
+# 第一个卷积层，参数规模为(32,3,5,5)，即32个5*5的3通道filter
+weight = net.params["conv1"][0].data
+print(weight.shape)
+show_feature(weight.transpose(0, 2, 3, 1))
+
+# # 第二个卷积层的权值参数，共有32*32个filter,每个filter大小为5*5
+# weight = net.params["conv2"][0].data;
+# print(weight.shape)
+# show_feature(weight.reshape(32 ** 2, 5, 5));
+#
+# # 第三个卷积层的权值，共有64*32个filter,每个filter大小为5*5，取其前1024个进行可视化
+# weight = net.params["conv3"][0].data;
+# print(weight.shape)
+# show_feature(weight.reshape(64 * 32, 5, 5)[:1024]);

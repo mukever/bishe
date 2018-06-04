@@ -3,7 +3,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-image = Image.open("/Users/diamond/PycharmProjects/bishe/test/大地保险/jcaptcha.jpeg")
+image = Image.open("/Users/diamond/PycharmProjects/bishe/media/caps/sites/宜信.jpg")
 image_array = np.array(image)
 
 x = np.arange(255)
