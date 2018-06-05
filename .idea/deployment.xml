@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="diamond@192.168.56.101:22" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" autoUploadExternalChanges="true" showNewOnTargetInSync="false">
     <serverData>
-      <paths name="diamond@192.168.56.101:22">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/home/diamond/Pycharmprojects/bishe" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
       <paths name="root@101.200.46.167:22">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/pycharm_project_41" local="$PROJECT_DIR$" />
+            <mapping deploy="/root/bishe" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

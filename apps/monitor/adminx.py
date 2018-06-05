@@ -11,7 +11,7 @@ class CheckInfoInline:
 
 class SpiderInfoAdmin:
 
-    list_display = ['name','url', 'status','status_tag','run_nums','predict_nums','desc', 'add_time']
+    list_display = ['name','url', 'status','status_tag','run_nums','check','bianma','spider_run_nums','predict_nums','desc', 'add_time']
     search_fields = ['name','url', 'desc', 'add_time']
     list_filter = ['name','url',  'desc', 'add_time']
 

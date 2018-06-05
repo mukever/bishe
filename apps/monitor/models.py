@@ -21,6 +21,12 @@ class SpiderInfo(models.Model):
                                             ('3', 'POST提交数据验证'),
                                                     ),
                            default='1', verbose_name='验证方式')
+    bianma = models.CharField(max_length=20, choices=(
+                                            ('1', 'UTF8'), ('2', 'GB2312'),
+                                                    ),
+                           default='1', verbose_name='数据编码格式')
+    spider_run_nums = models.IntegerField(default=5,verbose_name='需要测试次数')
+    posturl =  models.CharField(max_length=200, verbose_name='数据提交地址')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 
     def status_tag(self):

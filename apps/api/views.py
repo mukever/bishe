@@ -1,7 +1,10 @@
 import json
+import string
 import threading
 import time
 import traceback
+
+import bs4
 import numpy as np
 from PIL import Image
 
@@ -22,11 +25,12 @@ from PIL import Image
 from django.views.generic.base import View
 import caffe
 from imageio import save
+from numpy import unicode
 
 from .postutils import  chaojicheck
-from bishe.settings import MODEL_CAP_ROOT, MEDIA_CAP_ROOT, MEDIA_CAP_DB_PATH, MEDIA_URL, BASE_DIR,  \
-    MEDIA_API_PATH
-from monitor.models import SpiderInfo, PredisctList
+from bishe.settings import MODEL_CAP_ROOT, MEDIA_CAP_ROOT, MEDIA_CAP_DB_PATH, MEDIA_URL, BASE_DIR, \
+    MEDIA_API_PATH, TIMEOUT
+from monitor.models import SpiderInfo, PredisctList, CheckInfo
 from monitor.plugins import CJsonEncoder
 from .vocab import *
 from bishe.settings import MEDIA_CAFFE_PATH, MEDIA_CAFFE_PROTOTXT_PATH, MEDIA_CAFFE_LABEL_PATH
@@ -44,7 +48,12 @@ Transformer.set_mean('data', np.array([104, 117, 123]))  # 减去均值，前面
 Transformer.set_raw_scale('data', 255)  # 缩放到【0，255】之间
 Transformer.set_channel_swap('data', (2, 1, 0))  # 交换通道，将图片由RGB变为BGR
 
+header = {
+    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'Referer':'https://ln.122.gov.cn/views/inquiry.html',
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
 
+}
 class SpiderControView(View):
 
     def get(self,request,spider_id):
@@ -113,55 +122,86 @@ class SpiderThread(threading.Thread):
             ######download pic
             _session = requests.session()
 
-            ecpohs = 10
-            if self.spider.needcheck == '1':
-                ecpohs=30
+            ecpohs = self.spider.spider_run_nums
+            # if self.spider.needcheck == '1':
+            #     ecpohs=1
 
             for i in range(ecpohs):
-                img = _session.get(self.spider.url.image_url)
-                temp_img = img.content
+                # proxy = {'http': '33.33.33.10:8118'}
+                try:
 
-                ######save pic
-                temp_name = str(datetime.now())+ ".jpg"
+                    proxy_ip_port = requests.get('http://123.207.35.36:5010/get/',timeout=TIMEOUT).content.decode('utf8')
+                    proxy = {'http': proxy_ip_port}
+                    print(proxy)
 
-                fp = open(folder_path + temp_name , "wb")
-                fp.write(temp_img)
-                fp.close()
-                print(folder_path+temp_name)
-                #####read img
-                im = caffe.io.load_image(folder_path + temp_name)  # 加载图片
-                ### detail
-                CAFFENET.blobs['data'].data[...] = Transformer.preprocess('data', im)  # 执行上面设置的图片预处理操作，并将图片载入到blob中
-                ### predict
-                CAFFENET.forward()
-                Predisct = ""
-                pre_st = 0
-                for i in range(1, int(self.spider.url.tag)+1):
-                    # print('---------------------\n',net.blobs['fc1000'+str(i)].data)
-                    prob = CAFFENET.blobs['fc1000' + str(i)].data[0].flatten()  # 取出最后一层（Softmax）属于某个类别的概率值，并打印
-                    # print (prob)
-                    order = prob.argsort()[-1]  # 将概率值排序，取出最大值所在的序号
-                    # print(order)
-                    Predisct+=LABELS[order]  # 将该序号转换成对应的类别名称，并打印
-                print(Predisct)
-                if self.spider.needcheck=='2':
-                    pre_st = chaojicheck(folder_path+temp_name,Predisct,self.spider.url.tag)
+                    #判断proxy可用性
+                    print(bs4.BeautifulSoup(requests.get('http://ip.chinaz.com/', proxies=proxy,timeout=TIMEOUT).content,
+                                            'html5lib').find("p", {
+                        "class": "getlist pl10"}).get_text())
 
-                db_path = MEDIA_CAP_DB_PATH+medile_path+temp_name
+                    img = _session.get(self.spider.url.image_url,proxies=proxy,timeout=TIMEOUT)
+                    temp_img = img.content
 
-                predict_model = PredisctList()
+                    ######save pic
+                    temp_name = str(datetime.now())+ ".jpg"
 
-                predict_model.spidername = self.spider
-                predict_model.yzmname = self.spider.url
-                predict_model.status = pre_st
-                predict_model.img = db_path
-                predict_model.predict = Predisct
-                temp_time = datetime.now()
-                print(temp_time)
-                predict_model.add_time = temp_time
-                predict_model.save()
-                self.spider.predict_nums+=1
-                self.spider.save()
+                    fp = open(folder_path + temp_name , "wb")
+                    fp.write(temp_img)
+                    fp.close()
+                    print(folder_path+temp_name)
+                    #####read img
+                    im = caffe.io.load_image(folder_path + temp_name)  # 加载图片
+                    ### detail
+                    CAFFENET.blobs['data'].data[...] = Transformer.preprocess('data', im)  # 执行上面设置的图片预处理操作，并将图片载入到blob中
+                    ### predict
+                    CAFFENET.forward()
+                    Predisct = ""
+                    pre_st = 0
+                    for i in range(1, int(self.spider.url.tag)+1):
+                        # print('---------------------\n',net.blobs['fc1000'+str(i)].data)
+                        prob = CAFFENET.blobs['fc1000' + str(i)].data[0].flatten()  # 取出最后一层（Softmax）属于某个类别的概率值，并打印
+                        # print (prob)
+                        order = prob.argsort()[-1]  # 将概率值排序，取出最大值所在的序号
+                        # print(order)
+                        Predisct+=LABELS[order]  # 将该序号转换成对应的类别名称，并打印
+                    # print(Predisct)
+                    msg = "无验证"
+                    if self.spider.needcheck=='2':
+                        pre_st,msg = checkyzm(self.spider,Predisct,_session,proxy)
+
+                    #pre_st = checkyzm(self.spider, Predisct,_session)
+                    print(Predisct)
+                    db_path = MEDIA_CAP_DB_PATH+medile_path+temp_name
+
+                    predict_model = PredisctList()
+
+                    predict_model.spidername = self.spider
+                    predict_model.yzmname = self.spider.url
+                    predict_model.status = pre_st
+                    predict_model.img = db_path
+                    predict_model.desc = msg
+                    predict_model.predict = Predisct
+                    temp_time = datetime.now()
+                    print(temp_time)
+                    predict_model.add_time = temp_time
+                    predict_model.save()
+                    self.spider.predict_nums+=1
+                    self.spider.save()
+                except requests.exceptions.ReadTimeout as e:
+                    print("代理异常  requests.exceptions.ReadTimeout")
+                except requests.exceptions.ProxyError as e:
+                    print("代理异常  requests.exceptions.ProxyError ")
+                    # traceback.print_exc()
+                except requests.exceptions.ConnectTimeout as e:
+                    print("网络异常，代理超时 requests.exceptions.ConnectTimeout")
+                    # traceback.print_exc()
+                except requests.exceptions.ConnectionError as e:
+                    print("网络异常,连接出错 requests.exceptions.ConnectionError")
+                    # traceback.print_exc()
+                except AttributeError as e:
+                    print("确认代理信息失败AttributeError")
+                except Exception as e:
+                    traceback.print_exc()
         except Exception as e:
             ### finsish task
             traceback.print_exc()
@@ -179,12 +219,12 @@ class PrediacListDataView(View):
 
         if not request.user.is_authenticated():
             data = getPreDiactData()
-            data_json = json.dumps(data,cls=CJsonEncoder)
+            data_json = json.dumps(data,cls=CJsonEncoder,ensure_ascii=False)
             print(data_json)
             return HttpResponse(data_json)
         else:
             data = getPreDiactData()
-            data_json = json.dumps(data, cls=CJsonEncoder)
+            data_json = json.dumps(data, cls=CJsonEncoder,ensure_ascii=False)
             print(data_json)
             return HttpResponse(data_json)
 
@@ -272,7 +312,6 @@ def getPreDiactData():
     Echart_data['data'] = all_data
     Echart_data['count'] = all_data.__len__()
 
-
     return Echart_data
 
 
@@ -290,3 +329,101 @@ def getTime():
 
 
 
+def checkyzm(spider,predictvalue,re_sssion,proxy):
+
+    status = 0
+    msg ="验证通过"
+    try:
+
+        #获取提交数据信息
+        print("ready check")
+        print(spider)
+        all_attrs = CheckInfo.objects.filter(name=spider).all()
+        # 获取提交数据地址
+        dicts = {}
+        cap = ""
+        for attrs in all_attrs:
+
+            if attrs.desc=="验证码":
+                cap = attrs.attr
+            if attrs.desc =="随机产生":
+                attrs.value = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+            dicts[attrs.attr] = attrs.value
+
+        dicts[cap] = predictvalue
+        print(dicts)
+        post_url = spider.posturl
+        #封装爬虫信息
+
+        if spider.check == '3':
+            res = re_sssion.post(post_url,data=dicts,headers=header,proxies=proxy,timeout=TIMEOUT).content.decode('utf8')
+
+            if "验证码" in res:
+                status = 0
+                print("验证码错误")
+                print(res)
+            else:
+                status = 1
+                print("验证码正确")
+        elif spider.check=='2':
+            post_url+='?'
+            li = list(dicts.keys())
+            for i in  range(li.__len__()):
+                if i==0:
+                    post_url+=(li[i]+"="+dicts[li[i]])
+                else:
+                    post_url += ("&"+li[i] + "=" + dicts[li[i]])
+            # print(post_url)
+            # 提交数据
+            res = re_sssion.get(post_url, headers=header,proxies=proxy,timeout=TIMEOUT)
+            bianma = spider.get_bianma_display()
+            print(bianma)
+            text = res.content.decode(bianma)
+            print("数据提交完毕")
+            print(text)
+            if "验证码" in text:
+                status = 0
+                print("验证码错误")
+            else:
+                #获取结果
+                status = 1
+                print("验证码正确")
+
+
+    except requests.exceptions.ReadTimeout as e:
+
+        print("代理异常  requests.exceptions.ReadTimeout")
+        msg='代理异常  requests.exceptions.ReadTimeout'
+        status = 0
+    except requests.exceptions.ProxyError as e:
+
+        print("代理异常  requests.exceptions.ProxyError ")
+        msg = '代理异常 requests.exceptions.ProxyError '
+
+        status = 0
+        # traceback.print_exc()
+
+    except requests.exceptions.ConnectTimeout as e:
+
+        print("网络异常，代理超时 requests.exceptions.ConnectTimeout")
+        msg = '网络异常，代理超时 requests.exceptions.ConnectTimeout'
+        # traceback.print_exc()
+
+    except requests.exceptions.ConnectionError as e:
+
+        print("网络异常,连接出错 requests.exceptions.ConnectionError")
+        msg = '网络异常,连接出错 requests.exceptions.ConnectionError'
+        status = 0
+        # traceback.print_exc()
+
+    except AttributeError as e:
+
+        print("确认代理信息失败AttributeError")
+        msg = '确认代理信息失败AttributeError'
+        status = 0
+    except Exception as e:
+        msg = '系统错误'
+        status = 0
+        traceback.print_exc()
+    finally:
+        return status,msg

@@ -199,3 +199,6 @@ DEBUG= True
 ####api
 APPEND_SLASH=False
 MEDIA_API_PATH = os.path.join(BASE_DIR, 'media/caps/sites/api/temp.jpg')
+
+##爬虫请求参数
+TIMEOUT = 5

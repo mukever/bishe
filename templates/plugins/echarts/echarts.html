@@ -13,7 +13,7 @@
         var all_count = 0;
         var pashpredictdata = function () {
               $.ajax({
-                url: "http://127.0.0.1:8000/api/predictdata",
+                url: "http://101.200.46.167:8000/api/predictdata/",
                 type: 'GET',
                 async: false,
                 dataType: 'json',
@@ -26,8 +26,8 @@
                         var temp_data = [];
                         console.log(data['data'][temp_i]['data_num']);
                         for (var i=0;i<data['data'][temp_i]['data_num'];i++){
-                            {#console.log(data['data'][temp_i]['data_date'][i]);#}
-                            {#console.log(new Date(data['data'][temp_i]['data_date'][i]))#}
+                            console.log(data['data'][temp_i]['data_date'][i]);
+                            console.log(new Date(data['data'][temp_i]['data_date'][i]))
                             temp_data.push([new Date(data['data'][temp_i]['data_date'][i]),
                             data['data'][temp_i]['data_sum'][i],
                             ])
