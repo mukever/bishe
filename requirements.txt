@@ -21,7 +21,7 @@ odfpy==1.3.6
 olefile==0.45.1
 opencv-python==3.4.0.12
 openpyxl==2.5.1
-Pillow==4.0.0
+Pillow==6.2.0
 protobuf==3.5.2
 pycparser==2.18
 PyMySQL==0.7.10
